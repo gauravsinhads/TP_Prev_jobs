@@ -9,8 +9,8 @@ st.set_page_config(page_title="Previous Jobs Breakdown", layout="centered")
 # Read CSV
 Prev_jobs = pd.read_csv('Prev_jobs.csv')
 
-# Ensure there's a datetime column for filtering (replace 'date' with actual column name if different)
-Prev_jobs['date'] = pd.to_datetime(Prev_jobs['date'], errors='coerce')
+# Parse 'INVITATIONDT' as datetime
+Prev_jobs['INVITATIONDT'] = pd.to_datetime(Prev_jobs['INVITATIONDT'], errors='coerce')
 
 # Define custom color palette
 colors = ["#001E44", "#F5F5F5", "#E53855", "#B4BBBE", "#2F76B9", "#3B9790", "#F5BA2E", "#6A4C93", "#F77F00"]
@@ -21,14 +21,14 @@ time_filter = st.selectbox(
     ["Last 6 Months", "Last 12 Months"]
 )
 
-# Filter data based on selected time period
+# Filter data based on selected time period using 'INVITATIONDT'
 today = datetime.today()
 if time_filter == "Last 6 Months":
     start_date = today - timedelta(days=180)
 elif time_filter == "Last 12 Months":
     start_date = today - timedelta(days=365)
 
-filtered_data = Prev_jobs[Prev_jobs['date'] >= start_date]
+filtered_data = Prev_jobs[Prev_jobs['INVITATIONDT'] >= start_date]
 
 # Check if 'previous_jobs' column exists
 if 'previous_jobs' not in filtered_data.columns:
@@ -49,5 +49,5 @@ else:
     )
     fig.update_traces(textinfo='percent+label')
 
+    # Show chart
     st.plotly_chart(fig, use_container_width=True)
-
