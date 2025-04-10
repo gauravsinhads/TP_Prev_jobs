@@ -30,14 +30,14 @@ elif time_filter == "Last 12 Months":
 
 filtered_data = Prev_jobs[Prev_jobs['INVITATIONDT'] >= start_date]
 
-# Check if 'previous_jobs' column exists
-if 'previous_jobs' not in filtered_data.columns:
-    st.error("The column 'previous_jobs' is missing in the dataset.")
+# Check if 'PREVIOUS_JOBS' column exists
+if 'PREVIOUS_JOBS' not in filtered_data.columns:
+    st.error("The column 'PREVIOUS_JOBS' is missing in the dataset.")
 else:
     # Prepare data for pie chart
-    job_counts = filtered_data['previous_jobs'].value_counts().reset_index()
-    job_counts.columns = ['previous_jobs', 'count']
-    job_counts['label'] = job_counts.apply(lambda x: f"{x['previous_jobs']} ({x['count']})", axis=1)
+    job_counts = filtered_data['PREVIOUS_JOBS'].value_counts().reset_index()
+    job_counts.columns = ['PREVIOUS_JOBS', 'count']
+    job_counts['label'] = job_counts.apply(lambda x: f"{x['PREVIOUS_JOBS']} ({x['count']})", axis=1)
 
     # Plotly pie chart
     fig = px.pie(
