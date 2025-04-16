@@ -54,6 +54,14 @@ else:
             title=f"Breakdown of Previous Jobs ({start_date} to {end_date})"
         )
         fig.update_traces(textinfo='percent+label')
-
-        # Show chart
         st.plotly_chart(fig, use_container_width=True)
+
+        # Add export CSV button
+        st.markdown("### Export Filtered Data")
+        csv = filtered_data.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📥 Download CSV",
+            data=csv,
+            file_name=f'Filtered_Prev_Jobs_{start_date}_to_{end_date}.csv',
+            mime='text/csv'
+        )
