@@ -70,8 +70,8 @@ else:
             mime='text/csv'
         )
 
-    # --- STACKED BAR CHART SECTION ---
-    st.markdown("## 📊 Stacked Bar: Employment Status by Previous Jobs")
+       # --- STACKED BAR CHART SECTION ---
+    st.markdown("## 📊 Stacked Bar: Distribution of Previous Jobs Categories by Shortlisted/Hired Status")
     filtered_pje = Pje[
         (Pje['INVITATIONDT'].dt.date >= start_date) &
         (Pje['INVITATIONDT'].dt.date <= end_date)
@@ -82,6 +82,10 @@ else:
     elif filtered_pje.empty:
         st.warning("⚠️ No data in selected range.")
     else:
+        # Filter for only 'shortlisted' and 'hired' categories
+        filtered_pje = filtered_pje[filtered_pje['FOLDER'].str.lower().isin(['shortlisted', 'hired'])]
+
+        # Group and count
         bar_data = filtered_pje.groupby(['PREVIOUS_JOBS', 'FOLDER']).size().reset_index(name='count')
 
         fig_bar = px.bar(
@@ -89,7 +93,7 @@ else:
             x='PREVIOUS_JOBS',
             y='count',
             color='FOLDER',
-            title=f"Employment Status by Previous Jobs ({start_date} to {end_date})",
+            title="Distribution of Previous Jobs Categories by Shortlisted/Hired Status",
             color_discrete_sequence=colors
         )
         fig_bar.update_layout(barmode='stack', xaxis_title='Previous Jobs', yaxis_title='Count')
@@ -100,6 +104,6 @@ else:
         st.download_button(
             label="📥 Download Bar Chart Data CSV",
             data=csv_bar,
-            file_name=f'Filtered_Pje_{start_date}_to_{end_date}.csv',
+            file_name=f'Filtered_Pje_Shortlisted_Hired_{start_date}_to_{end_date}.csv',
             mime='text/csv'
         )
