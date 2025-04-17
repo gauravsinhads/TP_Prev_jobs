@@ -70,7 +70,7 @@ else:
             mime='text/csv'
         )
 
-       # --- STACKED BAR CHART SECTION ---
+          # --- STACKED BAR CHART SECTION ---
     st.markdown("## 📊 Stacked Bar: Distribution of Previous Jobs Categories by Shortlisted/Hired Status")
     filtered_pje = Pje[
         (Pje['INVITATIONDT'].dt.date >= start_date) &
@@ -82,24 +82,50 @@ else:
     elif filtered_pje.empty:
         st.warning("⚠️ No data in selected range.")
     else:
-        # Filter for only 'shortlisted' and 'hired' categories
+        # Filter only 'shortlisted' and 'hired'
         filtered_pje = filtered_pje[filtered_pje['FOLDER'].str.lower().isin(['shortlisted', 'hired'])]
 
-        # Group and count
+        # Normalize folder casing for consistency
+        filtered_pje['FOLDER'] = filtered_pje['FOLDER'].str.lower().str.capitalize()
+
+        # Group and calculate counts
         bar_data = filtered_pje.groupby(['PREVIOUS_JOBS', 'FOLDER']).size().reset_index(name='count')
+
+        # Calculate percentage within each PREVIOUS_JOBS group
+        total_per_job = bar_data.groupby('PREVIOUS_JOBS')['count'].transform('sum')
+        bar_data['percentage'] = (bar_data['count'] / total_per_job) * 100
+        bar_data['text'] = bar_data.apply(lambda x: f"{x['count']} ({x['percentage']:.1f}%)", axis=1)
+
+        # Define custom color map
+        color_map = {
+            "Shortlisted": "#F77F00",  # Orange
+            "Hired": "#001E44",        # Dark blue
+        }
 
         fig_bar = px.bar(
             bar_data,
             x='PREVIOUS_JOBS',
             y='count',
             color='FOLDER',
+            text='text',
             title="Distribution of Previous Jobs Categories by Shortlisted/Hired Status",
-            color_discrete_sequence=colors
+            color_discrete_map=color_map
         )
-        fig_bar.update_layout(barmode='stack', xaxis_title='Previous Jobs', yaxis_title='Count')
+
+        fig_bar.update_layout(
+            barmode='stack',
+            xaxis_title='Previous Jobs',
+            yaxis_title='Count',
+            uniformtext_minsize=8,
+            uniformtext_mode='hide'
+        )
+
+        # Improve text appearance
+        fig_bar.update_traces(textposition='inside')
+
         st.plotly_chart(fig_bar, use_container_width=True)
 
-        # Export CSV
+        # Export filtered data
         csv_bar = filtered_pje.to_csv(index=False).encode('utf-8')
         st.download_button(
             label="📥 Download Bar Chart Data CSV",
