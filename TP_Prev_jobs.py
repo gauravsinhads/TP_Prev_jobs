@@ -134,7 +134,7 @@ else:
             mime='text/csv'
         )
 
-    # --- NEW STACKED BAR CHART: Employment Status by Previous Jobs ---
+     # --- UPDATED STACKED BAR CHART: Employment Status by Previous Jobs ---
     st.markdown("## 📊 Stacked Bar: Distribution of Previous Jobs Categories by Employment Status")
 
     filtered_pje_empstat = Pje[
@@ -147,7 +147,10 @@ else:
     elif filtered_pje_empstat.empty:
         st.warning("⚠️ No data in selected range.")
     else:
-        # Normalize for consistent formatting
+        # Drop rows where EMPLOYMENTSTATUS is NaN
+        filtered_pje_empstat = filtered_pje_empstat.dropna(subset=['EMPLOYMENTSTATUS'])
+
+        # Normalize EMPLOYMENTSTATUS casing
         filtered_pje_empstat['EMPLOYMENTSTATUS'] = filtered_pje_empstat['EMPLOYMENTSTATUS'].astype(str).str.capitalize()
 
         # Group and count
@@ -158,7 +161,7 @@ else:
         empstat_data['percentage'] = (empstat_data['count'] / total_per_job_emp) * 100
         empstat_data['text'] = empstat_data.apply(lambda x: f"{x['count']} ({x['percentage']:.1f}%)", axis=1)
 
-        # Create stacked bar chart
+        # Plotly stacked bar chart
         fig_empstat = px.bar(
             empstat_data,
             x='PREVIOUS_JOBS',
@@ -181,7 +184,7 @@ else:
 
         st.plotly_chart(fig_empstat, use_container_width=True)
 
-        # Export CSV
+        # Export filtered data
         csv_empstat = filtered_pje_empstat.to_csv(index=False).encode('utf-8')
         st.download_button(
             label="📥 Download Employment Status Data CSV",
@@ -189,4 +192,5 @@ else:
             file_name=f'Filtered_Pje_EmploymentStatus_{start_date}_to_{end_date}.csv',
             mime='text/csv'
         )
+
 
