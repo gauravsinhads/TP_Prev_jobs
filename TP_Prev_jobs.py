@@ -133,3 +133,60 @@ else:
             file_name=f'Filtered_Pje_Shortlisted_Hired_{start_date}_to_{end_date}.csv',
             mime='text/csv'
         )
+
+    # --- NEW STACKED BAR CHART: Employment Status by Previous Jobs ---
+    st.markdown("## 📊 Stacked Bar: Distribution of Previous Jobs Categories by Employment Status")
+
+    filtered_pje_empstat = Pje[
+        (Pje['INVITATIONDT'].dt.date >= start_date) &
+        (Pje['INVITATIONDT'].dt.date <= end_date)
+    ]
+
+    if 'PREVIOUS_JOBS' not in filtered_pje_empstat.columns or 'EMPLOYMENTSTATUS' not in filtered_pje_empstat.columns:
+        st.error("Columns 'PREVIOUS_JOBS' and/or 'EMPLOYMENTSTATUS' not found in Previous_jobs_EmpStat.csv")
+    elif filtered_pje_empstat.empty:
+        st.warning("⚠️ No data in selected range.")
+    else:
+        # Normalize for consistent formatting
+        filtered_pje_empstat['EMPLOYMENTSTATUS'] = filtered_pje_empstat['EMPLOYMENTSTATUS'].astype(str).str.capitalize()
+
+        # Group and count
+        empstat_data = filtered_pje_empstat.groupby(['PREVIOUS_JOBS', 'EMPLOYMENTSTATUS']).size().reset_index(name='count')
+
+        # Calculate percentages
+        total_per_job_emp = empstat_data.groupby('PREVIOUS_JOBS')['count'].transform('sum')
+        empstat_data['percentage'] = (empstat_data['count'] / total_per_job_emp) * 100
+        empstat_data['text'] = empstat_data.apply(lambda x: f"{x['count']} ({x['percentage']:.1f}%)", axis=1)
+
+        # Create stacked bar chart
+        fig_empstat = px.bar(
+            empstat_data,
+            x='PREVIOUS_JOBS',
+            y='count',
+            color='EMPLOYMENTSTATUS',
+            text='text',
+            title="Distribution of Previous Jobs Categories by Employment Status",
+            color_discrete_sequence=colors
+        )
+
+        fig_empstat.update_layout(
+            barmode='stack',
+            xaxis_title='Previous Jobs',
+            yaxis_title='Count',
+            uniformtext_minsize=8,
+            uniformtext_mode='hide'
+        )
+
+        fig_empstat.update_traces(textposition='inside')
+
+        st.plotly_chart(fig_empstat, use_container_width=True)
+
+        # Export CSV
+        csv_empstat = filtered_pje_empstat.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📥 Download Employment Status Data CSV",
+            data=csv_empstat,
+            file_name=f'Filtered_Pje_EmploymentStatus_{start_date}_to_{end_date}.csv',
+            mime='text/csv'
+        )
+
