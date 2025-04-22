@@ -41,7 +41,7 @@ if start_date > end_date:
     st.error("❌ Start date must be before or equal to end date.")
 else:
     # --- PIE CHART SECTION ---
-    st.markdown("## 📊 Pie Chart: Breakdown of Previous Jobs")
+    st.markdown("## Pie Chart: Breakdown of Previous Jobs")
     filtered_prev_jobs = Prev_jobs[
         (Prev_jobs['INVITATIONDT'].dt.date >= start_date) &
         (Prev_jobs['INVITATIONDT'].dt.date <= end_date)
@@ -76,7 +76,7 @@ else:
         )
 
     # --- STACKED BAR CHART: Shortlisted/Hired Status by Previous Jobs ---
-    st.markdown("## 📊 Stacked Bar: Distribution of Previous Jobs Categories by Shortlisted/Hired Status")
+    st.markdown("## Stacked Bar: Distribution of Previous Jobs Categories by Shortlisted/Hired Status")
     filtered_pje = Pje[
         (Pje['INVITATIONDT'].dt.date >= start_date) &
         (Pje['INVITATIONDT'].dt.date <= end_date)
@@ -138,7 +138,7 @@ else:
         )
 
     # --- STACKED BAR CHART: Employment Status by Previous Jobs ---
-    st.markdown("## 📊 Stacked Bar: Distribution of Previous Jobs Categories by Employment Status")
+    st.markdown("## Stacked Bar: Distribution of Previous Jobs Categories by Employment Status")
 
     filtered_pje_empstat = Pje[
         (Pje['INVITATIONDT'].dt.date >= start_date) &
