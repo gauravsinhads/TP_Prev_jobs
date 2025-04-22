@@ -3,12 +3,17 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 
+
 # Page config
 st.set_page_config(page_title="Previous Jobs Dashboard", layout="centered")
 
 # Load data
 Prev_jobs = pd.read_csv('Prev_jobs.csv')
 Pje = pd.read_csv('Previous_jobs_EmpStat.csv')
+
+# Page title
+st.title("📊 Previous Jobs Analysis")
+
 
 # Parse dates
 Prev_jobs['INVITATIONDT'] = pd.to_datetime(Prev_jobs['INVITATIONDT'], errors='coerce')
