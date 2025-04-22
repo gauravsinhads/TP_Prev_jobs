@@ -11,9 +11,6 @@ st.set_page_config(page_title="Previous Jobs Dashboard", layout="centered")
 Prev_jobs = pd.read_csv('Prev_jobs.csv')
 Pje = pd.read_csv('Previous_jobs_EmpStat.csv')
 
-# Page title
-st.title("📊 Previous Jobs Analysis")
-
 
 # Parse dates
 Prev_jobs['INVITATIONDT'] = pd.to_datetime(Prev_jobs['INVITATIONDT'], errors='coerce')
@@ -25,6 +22,9 @@ Pje = Pje.dropna(subset=['INVITATIONDT'])
 
 # Define custom colors
 colors = ["#001E44", "#F5F5F5", "#E53855", "#B4BBBE", "#2F76B9", "#3B9790", "#F5BA2E", "#6A4C93", "#F77F00"]
+
+# Page title
+st.title("📊 Previous Jobs Analysis")
 
 # --- TOP DATE RANGE FILTER ---
 st.markdown("### 📅 Select Custom Date Range")
